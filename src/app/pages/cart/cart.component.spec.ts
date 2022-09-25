@@ -50,8 +50,10 @@ describe('Cart Component', () => {
     fixture = TestBed.createComponent(CartComponent);
     service = fixture.debugElement.injector.get(BookService);
     component = fixture.componentInstance;
-    fixture.detectChanges(); //Ao charmamos esse detectChanges estamos simulando o comportamento
+    fixture.detectChanges();
+    //Ao charmamos esse detectChanges estamos simulando o comportamento
     // do NgOnInit()
+    spyOn(service, 'getBooksFromCart').and.callFake(() => bookList);
   });
 
   it('should create', () => {
@@ -102,5 +104,30 @@ describe('Cart Component', () => {
     expect(updateAmountBookSpy).toHaveBeenCalled();
     expect(getTotalPriceSpy).toHaveBeenCalled();
     expect(book.amount).toBe(1);
+  });
+
+  // Uma boa prática é sempre testarmos um teste privado por
+  // meio de um método público, caso não seja possível
+  // Temos algum erro em nosso código
+  it('onClearBooks works correctly', () => {
+    component.listCartBook = bookList;
+
+    const removeBooksFromCartSpy = spyOn(
+      service,
+      'removeBooksFromCart'
+    ).and.callFake(() => null);
+
+    // Apesar de não ser uma boa prática
+    // podemos considerar nosso componente como sendo do tipo any
+    // para podermos chamar um método privado
+    const clearListCartBook = spyOn(
+      component as any,
+      '_clearListCartBook'
+    ).and.callThrough();
+    component.onClearBooks();
+
+    expect(component.listCartBook.length === 0).toBeTrue();
+    expect(removeBooksFromCartSpy).toHaveBeenCalled();
+    expect(clearListCartBook).toHaveBeenCalled();
   });
 });
