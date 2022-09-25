@@ -34,6 +34,11 @@ const bookServiceMock = {
   getBooks: () => of(bookList),
 };
 
+// Podemos usar os prefixos f e x
+// para poder dar foco ou desabilitar seja um teste ou uma suíte específica
+// f -> usado para dar foco a uma suíte ou teste específico
+// x -> usado para desabilitar uma suíte ou teste específico
+
 describe('Home Component', () => {
   let component: HomeComponent,
     fixture: ComponentFixture<HomeComponent>,
@@ -64,12 +69,8 @@ describe('Home Component', () => {
   });
 
   it('getBooks works correctly', () => {
-    // const getBooksSpy = spyOn(service, 'getBooks').and.returnValue(
-    //   of(bookList)
-    // );
-
     component.getBooks();
-    // expect(getBooksSpy).toHaveBeenCalled();
-    expect(component.listBook.length).toBe(3);
+    debugger;
+    expect(component.listBook.length).toBe(2);
   });
 });
