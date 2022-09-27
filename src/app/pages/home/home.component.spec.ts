@@ -1,5 +1,10 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
+import {
+  CUSTOM_ELEMENTS_SCHEMA,
+  NO_ERRORS_SCHEMA,
+  Pipe,
+  PipeTransform,
+} from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { Book } from 'src/app/models/book.model';
@@ -30,6 +35,17 @@ const bookList: Book[] = [
   },
 ];
 
+// Quando implementamos pipes por padrão nosso teste passa a falhar
+// Assim devemos sempre criar um mock do nosso pipe
+@Pipe({
+  name: 'reduceText',
+})
+class ReduceTextPipeMock implements PipeTransform {
+  transform(): string {
+    return '';
+  }
+}
+
 const bookServiceMock = {
   getBooks: () => of(bookList),
 };
@@ -46,7 +62,7 @@ describe('Home Component', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
-      declarations: [HomeComponent],
+      declarations: [HomeComponent, ReduceTextPipeMock],
       providers: [
         // BookService
         {
@@ -71,6 +87,6 @@ describe('Home Component', () => {
   it('getBooks works correctly', () => {
     component.getBooks();
     debugger;
-    expect(component.listBook.length).toBe(2);
+    expect(component.listBook.length).toBe(3);
   });
 });
