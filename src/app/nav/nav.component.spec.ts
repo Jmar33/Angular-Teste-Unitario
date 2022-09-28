@@ -1,5 +1,6 @@
 import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { NavComponent } from './nav.component';
 
@@ -35,5 +36,17 @@ describe('NavComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should navigate', () => {
+    const router = TestBed.inject(Router);
+
+    const spyNavigate = spyOn(router, 'navigate');
+
+    component.navTo('home');
+    expect(spyNavigate).toHaveBeenCalledWith(['/home']);
+
+    component.navTo('cart');
+    expect(spyNavigate).toHaveBeenCalledWith(['/cart']);
   });
 });
