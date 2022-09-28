@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, inject, TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
 import { CartComponent } from './cart.component';
@@ -39,8 +39,10 @@ describe('Cart Component', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
-      declarations: [CartComponent],
-      providers: [BookService],
+      declarations: [
+        // CartComponent
+      ],
+      providers: [BookService, CartComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
     });
   });
@@ -56,9 +58,15 @@ describe('Cart Component', () => {
     spyOn(service, 'getBooksFromCart').and.callFake(() => bookList);
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+  // fit('should create', () => {
+  //   expect(component).toBeTruthy();
+  // });
+  fit('should create', inject(
+    [CartComponent],
+    (testComponent: CartComponent) => {
+      expect(testComponent).toBeTruthy();
+    }
+  ));
 
   it('getTotalPrice return an amount', () => {
     const totalPrice = component.getTotalPrice(bookList);
