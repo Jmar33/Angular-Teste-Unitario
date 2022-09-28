@@ -39,10 +39,8 @@ describe('Cart Component', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
-      declarations: [
-        // CartComponent
-      ],
-      providers: [BookService, CartComponent],
+      declarations: [CartComponent],
+      providers: [BookService],
       schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
     });
   });
@@ -58,15 +56,9 @@ describe('Cart Component', () => {
     spyOn(service, 'getBooksFromCart').and.callFake(() => bookList);
   });
 
-  // fit('should create', () => {
-  //   expect(component).toBeTruthy();
-  // });
-  fit('should create', inject(
-    [CartComponent],
-    (testComponent: CartComponent) => {
-      expect(testComponent).toBeTruthy();
-    }
-  ));
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
 
   it('getTotalPrice return an amount', () => {
     const totalPrice = component.getTotalPrice(bookList);
