@@ -1,11 +1,21 @@
-import { ComponentFixture, inject, TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
 import { CartComponent } from './cart.component';
-import { BookService } from 'src/app/services/book.service';
-import { Book } from 'src/app/models/book.model';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { BookService } from '../../services/book.service';
+import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
+import { Book } from '../../models/book.model';
+import { MatDialog } from '@angular/material/dialog';
+import { of } from 'rxjs';
 
-const bookList: Book[] = [
+const MatDialogMock = {
+  open() {
+    return {
+      afterClosed: () => of(true),
+    };
+  },
+};
+
+const listBook: Book[] = [
   {
     name: '',
     author: '',
@@ -17,8 +27,8 @@ const bookList: Book[] = [
     name: '',
     author: '',
     isbn: '',
-    price: 2,
-    amount: 4,
+    price: 20,
+    amount: 1,
   },
   {
     name: '',
@@ -29,105 +39,109 @@ const bookList: Book[] = [
   },
 ];
 
-describe('Cart Component', () => {
-  let component: CartComponent,
-    fixture: ComponentFixture<CartComponent>,
-    service: BookService;
+describe('Cart component', () => {
+  let component: CartComponent;
+  let fixture: ComponentFixture<CartComponent>;
+  let service: BookService;
 
-  // Em schemas podemos importas essas duas constantes CUSTOM_ELEMENTS e NO_ERROS_SCHEMA
-  // para evitar possíveis erros
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       declarations: [CartComponent],
-      providers: [BookService],
+      providers: [
+        BookService,
+        {
+          provide: MatDialog,
+          useValue: MatDialogMock,
+        },
+      ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
-    });
+    }).compileComponents();
   });
 
-  // Uma boa prática é usarmos dois beforeEach
   beforeEach(() => {
     fixture = TestBed.createComponent(CartComponent);
-    service = fixture.debugElement.injector.get(BookService);
     component = fixture.componentInstance;
     fixture.detectChanges();
-    //Ao charmamos esse detectChanges estamos simulando o comportamento
-    // do NgOnInit()
-    spyOn(service, 'getBooksFromCart').and.callFake(() => bookList);
+    service = fixture.debugElement.injector.get(BookService);
+    spyOn(service, 'getBooksFromCart').and.callFake(() => listBook);
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  it('getTotalPrice return an amount', () => {
-    const totalPrice = component.getTotalPrice(bookList);
+  it('getTotalPrice returns an amount', () => {
+    const totalPrice = component.getTotalPrice(listBook);
     expect(totalPrice).toBeGreaterThan(0);
     expect(totalPrice).not.toBeNull();
   });
 
   it('onInputNumberChange increments correctly', () => {
     const action = 'plus';
-    const book = Object.assign({}, bookList[0]);
+    const book = {
+      name: '',
+      author: '',
+      isbn: '',
+      price: 15,
+      amount: 2,
+    };
 
-    const updateAmountBookSpy = spyOn(service, 'updateAmountBook').and.callFake(
-      () => null
-    );
-    const getTotalPriceSpy = spyOn(component, 'getTotalPrice').and.callFake(
-      () => null
-    );
+    const spy1 = spyOn(service, 'updateAmountBook').and.callFake(() => null);
+    const spy2 = spyOn(component, 'getTotalPrice').and.callFake(() => null);
 
     expect(book.amount).toBe(2);
 
     component.onInputNumberChange(action, book);
 
-    expect(updateAmountBookSpy).toHaveBeenCalled();
-    expect(getTotalPriceSpy).toHaveBeenCalled();
-    expect(book.amount).toBe(3);
+    expect(book.amount === 3).toBeTrue();
+
+    expect(spy1).toHaveBeenCalled();
+    expect(spy2).toHaveBeenCalled();
   });
 
-  it('onInputNumberChange increments correctly', () => {
+  it('onInputNumberChange decrements correctly', () => {
     const action = 'minus';
-    const book = Object.assign({}, bookList[0]);
+    const book = {
+      name: '',
+      author: '',
+      isbn: '',
+      price: 15,
+      amount: 3,
+    };
 
-    const updateAmountBookSpy = spyOn(service, 'updateAmountBook').and.callFake(
-      () => null
-    );
-    const getTotalPriceSpy = spyOn(component, 'getTotalPrice').and.callFake(
-      () => null
-    );
+    expect(book.amount).toBe(3);
 
-    expect(book.amount).toBe(2);
+    const spy1 = spyOn(service, 'updateAmountBook').and.callFake(() => null);
+    const spy2 = spyOn(component, 'getTotalPrice').and.callFake(() => null);
 
     component.onInputNumberChange(action, book);
 
-    expect(updateAmountBookSpy).toHaveBeenCalled();
-    expect(getTotalPriceSpy).toHaveBeenCalled();
-    expect(book.amount).toBe(1);
+    expect(book.amount).toBe(2);
+
+    expect(spy1).toHaveBeenCalled();
+    expect(spy2).toHaveBeenCalled();
   });
 
-  // Uma boa prática é sempre testarmos um teste privado por
-  // meio de um método público, caso não seja possível
-  // Temos algum erro em nosso código
   it('onClearBooks works correctly', () => {
-    component.listCartBook = bookList;
-
-    const removeBooksFromCartSpy = spyOn(
-      service,
-      'removeBooksFromCart'
-    ).and.callFake(() => null);
-
-    // Apesar de não ser uma boa prática
-    // podemos considerar nosso componente como sendo do tipo any
-    // para podermos chamar um método privado
-    const clearListCartBook = spyOn(
+    const spy1 = spyOn(
       component as any,
       '_clearListCartBook'
     ).and.callThrough();
+    const spy2 = spyOn(service, 'removeBooksFromCart').and.callFake(() => null);
+    component.listCartBook = listBook;
     component.onClearBooks();
+    expect(component.listCartBook.length).toBe(0);
+    expect(spy1).toHaveBeenCalled();
+    expect(spy2).toHaveBeenCalled();
+  });
 
-    expect(component.listCartBook.length === 0).toBeTrue();
-    expect(removeBooksFromCartSpy).toHaveBeenCalled();
-    expect(clearListCartBook).toHaveBeenCalled();
+  it('_clearListCartBook works correctly', () => {
+    const spy1 = spyOn(service, 'removeBooksFromCart').and.callFake(() => null);
+    component.listCartBook = listBook;
+    component['_clearListCartBook']();
+
+    expect(component.listCartBook.length).toBe(0);
+    expect(spy1).toHaveBeenCalled();
   });
 });

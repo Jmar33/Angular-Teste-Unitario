@@ -17,7 +17,7 @@ export class CartComponent implements OnInit {
 
   constructor(
     private readonly _bookService: BookService,
-    private readonly _dialog: MatDialog,
+    private readonly dialog: MatDialog,
   ) { }
 
   ngOnInit(): void {
@@ -42,7 +42,7 @@ export class CartComponent implements OnInit {
 
   public onClearBooks(): void {
     if (this.listCartBook?.length > 0) {
-      const dialogRef = this._dialog.open(ConfirmDialogComponent, {
+      const dialogRef = this.dialog.open(ConfirmDialogComponent, {
         maxWidth: '400px',
         data: {
             title: '¿Estás seguro?',
