@@ -2,173 +2,141 @@ import { CartComponent } from './cart.component';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { BookService } from '../../services/book.service';
-import {
-  CUSTOM_ELEMENTS_SCHEMA,
-  DebugElement,
-  NO_ERRORS_SCHEMA,
-} from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
 import { Book } from '../../models/book.model';
-import { MatDialog } from '@angular/material/dialog';
-import { of } from 'rxjs';
-import { By } from '@angular/platform-browser';
-import { query } from '@angular/animations';
-
-const MatDialogMock = {
-  open() {
-    return {
-      afterClosed: () => of(true),
-    };
-  },
-};
 
 const listBook: Book[] = [
-  {
-    name: '',
-    author: '',
-    isbn: '',
-    price: 15,
-    amount: 2,
-  },
-  {
-    name: '',
-    author: '',
-    isbn: '',
-    price: 20,
-    amount: 1,
-  },
-  {
-    name: '',
-    author: '',
-    isbn: '',
-    price: 8,
-    amount: 7,
-  },
+    {
+        name: '',
+        author: '',
+        isbn: '',
+        price: 15,
+        amount: 2
+    },
+    {
+        name: '',
+        author: '',
+        isbn: '',
+        price: 20,
+        amount: 1
+    },
+    {
+        name: '',
+        author: '',
+        isbn: '',
+        price: 8,
+        amount: 7
+    }
 ];
 
+
 describe('Cart component', () => {
-  let component: CartComponent;
-  let fixture: ComponentFixture<CartComponent>;
-  let service: BookService;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      declarations: [CartComponent],
-      providers: [
-        BookService,
-        {
-          provide: MatDialog,
-          useValue: MatDialogMock,
-        },
-      ],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
-    }).compileComponents();
-  });
+    let component: CartComponent;
+    let fixture: ComponentFixture<CartComponent>;
+    let service: BookService;
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(CartComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-    service = fixture.debugElement.injector.get(BookService);
-    spyOn(service, 'getBooksFromCart').and.callFake(() => listBook);
-  });
+    beforeEach( () => {
+        TestBed.configureTestingModule({
+            imports: [
+                HttpClientTestingModule
+            ],
+            declarations: [
+                CartComponent
+            ],
+            providers: [
+                BookService
+            ],
+            schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA]
+        }).compileComponents();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    beforeEach( () => {
+        fixture = TestBed.createComponent(CartComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+        service = fixture.debugElement.injector.get(BookService);
+        spyOn(service, 'getBooksFromCart').and.callFake( () => listBook);
+    });
 
-  it('getTotalPrice returns an amount', () => {
-    const totalPrice = component.getTotalPrice(listBook);
-    expect(totalPrice).toBeGreaterThan(0);
-    expect(totalPrice).not.toBeNull();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('onInputNumberChange increments correctly', () => {
-    const action = 'plus';
-    const book = {
-      name: '',
-      author: '',
-      isbn: '',
-      price: 15,
-      amount: 2,
-    };
 
-    const spy1 = spyOn(service, 'updateAmountBook').and.callFake(() => null);
-    const spy2 = spyOn(component, 'getTotalPrice').and.callFake(() => null);
+    it('getTotalPrice returns an amount', () => {
+        const totalPrice = component.getTotalPrice(listBook);
+        expect(totalPrice).toBeGreaterThan(0);
+        expect(totalPrice).not.toBeNull();
+    });
 
-    expect(book.amount).toBe(2);
+    it('onInputNumberChange increments correctly', () => {
+        const action = 'plus';
+        const book = {
+            name: '',
+            author: '',
+            isbn: '',
+            price: 15,
+            amount: 2
+        };
 
-    component.onInputNumberChange(action, book);
+        const spy1 = spyOn(service, 'updateAmountBook').and.callFake( ()=> null);
+        const spy2 = spyOn(component, 'getTotalPrice').and.callFake( ()=> null);
 
-    expect(book.amount === 3).toBeTrue();
+        expect(book.amount).toBe(2);
+        
+        component.onInputNumberChange(action, book);
 
-    expect(spy1).toHaveBeenCalled();
-    expect(spy2).toHaveBeenCalled();
-  });
+        expect(book.amount === 3).toBeTrue();
 
-  it('onInputNumberChange decrements correctly', () => {
-    const action = 'minus';
-    const book = {
-      name: '',
-      author: '',
-      isbn: '',
-      price: 15,
-      amount: 3,
-    };
+        expect(spy1).toHaveBeenCalled();
+        expect(spy2).toHaveBeenCalled();
 
-    expect(book.amount).toBe(3);
+    });    
+    
 
-    const spy1 = spyOn(service, 'updateAmountBook').and.callFake(() => null);
-    const spy2 = spyOn(component, 'getTotalPrice').and.callFake(() => null);
+    it('onInputNumberChange decrements correctly', () => {
+        const action = 'minus';
+        const book = {
+            name: '',
+            author: '',
+            isbn: '',
+            price: 15,
+            amount: 3
+        };
 
-    component.onInputNumberChange(action, book);
+        expect(book.amount).toBe(3);
 
-    expect(book.amount).toBe(2);
+        const spy1 = spyOn(service, 'updateAmountBook').and.callFake( ()=> null);
+        const spy2 = spyOn(component, 'getTotalPrice').and.callFake( ()=> null);
+        
+        component.onInputNumberChange(action, book);
 
-    expect(spy1).toHaveBeenCalled();
-    expect(spy2).toHaveBeenCalled();
-  });
+        expect(book.amount).toBe(2);
 
-  it('onClearBooks works correctly', () => {
-    const spy1 = spyOn(
-      component as any,
-      '_clearListCartBook'
-    ).and.callThrough();
-    const spy2 = spyOn(service, 'removeBooksFromCart').and.callFake(() => null);
-    component.listCartBook = listBook;
-    component.onClearBooks();
-    expect(component.listCartBook.length).toBe(0);
-    expect(spy1).toHaveBeenCalled();
-    expect(spy2).toHaveBeenCalled();
-  });
+        expect(spy1).toHaveBeenCalled();
+        expect(spy2).toHaveBeenCalled();
 
-  it('_clearListCartBook works correctly', () => {
-    const spy1 = spyOn(service, 'removeBooksFromCart').and.callFake(() => null);
-    component.listCartBook = listBook;
-    component['_clearListCartBook']();
+    });
 
-    expect(component.listCartBook.length).toBe(0);
-    expect(spy1).toHaveBeenCalled();
-  });
+    it('onClearBooks works correctly', () => {
+        const spy1 = spyOn((component as any), '_clearListCartBook').and.callThrough();
+        const spy2 = spyOn(service, 'removeBooksFromCart').and.callFake( () => null);
+        component.listCartBook = listBook;
+        component.onClearBooks();
+        expect(component.listCartBook.length).toBe(0);
+        expect(spy1).toHaveBeenCalled();
+        expect(spy2).toHaveBeenCalled();
+    });
 
-  it('The title "The cart is empty" is not displayed when there is a list', () => {
-    component.listCartBook = listBook;
-    fixture.detectChanges();
-    const debugElement: DebugElement = fixture.debugElement.query(
-      By.css('#titleCartEmpty')
-    );
-    expect(debugElement).toBeFalsy();
-  });
+    it('_clearListCartBook works correctly', () => {
+        const spy1 = spyOn(service, 'removeBooksFromCart').and.callFake( () => null);
+        component.listCartBook = listBook;
+        component["_clearListCartBook"]();
 
-  it('The title "The cart is empty" is displayed correctly when the list is empty', () => {
-    component.listCartBook = [];
-    const debugElement: DebugElement = fixture.debugElement.query(
-      By.css('#titleCartEmpty')
-    );
-    expect(debugElement).toBeTruthy();
-    if (debugElement) {
-      const element: HTMLElement = debugElement.nativeElement;
-      expect(element.innerHTML).toContain('The cart is empty');
-    }
-  });
+        expect(component.listCartBook.length).toBe(0);
+        expect(spy1).toHaveBeenCalled();
+
+    });
+
 });

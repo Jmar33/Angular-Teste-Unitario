@@ -16,6 +16,7 @@ speed-measure-plugin*.json
 
 # IDEs and editors
 /.idea
+/.angular
 .project
 .classpath
 .c9/
@@ -32,7 +33,6 @@ speed-measure-plugin*.json
 .history/*
 
 # misc
-/.angular/cache
 /.sass-cache
 /connect.lock
 /coverage
