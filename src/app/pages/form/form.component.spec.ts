@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FormComponent } from './form.component';
 
-fdescribe('Form Component', () => {
+describe('Form Component', () => {
   let component: FormComponent, fixture: ComponentFixture<FormComponent>;
 
   beforeEach(() => {
